@@ -1,0 +1,18 @@
+[Unit]
+Description=Nexus Sounds Audio Notification Daemon
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 -m nexus_sounds.daemon --config @@INSTALL_DIR@@/config.json --packs-dir @@INSTALL_DIR@@/packs
+Environment=PYTHONPATH=@@INSTALL_DIR@@
+Environment=HOME=@@HOME@@
+Restart=on-failure
+RestartSec=10s
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=nexus-sounds
+RuntimeDirectory=nexus-sounds
+
+[Install]
+WantedBy=default.target

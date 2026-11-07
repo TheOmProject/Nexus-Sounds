@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "enabled": true,
+  "volume": 70,
+  "muted": false,
+  "theme": "nexus_default",
+  "output_device": "auto",
+  "events": {
+    "startup": true,
+    "print_start": true,
+    "print_complete": true,
+    "print_error": true,
+    "print_cancelled": false,
+    "print_paused": false,
+    "print_resumed": false
+  },
+  "cooldown_seconds": 3.0
+}

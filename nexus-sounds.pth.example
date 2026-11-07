@@ -1,0 +1,11 @@
+# This file shows the path entry added to Nexus Screen's venv by the installer.
+# If you need to add it manually:
+#
+# 1. Find your NS venv site-packages directory:
+#    ls ~/nexus-screen-env/lib/python3.11/site-packages/
+#
+# 2. Create the .pth file:
+#    echo "$HOME/nexus-sounds" > ~/nexus-screen-env/lib/python3.11/site-packages/nexus-sounds.pth
+#
+# The installer (deploy/install.sh) handles this automatically.
+/home/<your-user>/nexus-sounds

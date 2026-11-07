@@ -1,0 +1,13 @@
+{
+  "id": "nexus_default",
+  "name": "Nexus Default",
+  "version": "1.0.0",
+  "author": "Nexus Sounds",
+  "description": "Original Nexus notification sounds",
+  "sounds": {
+    "startup": "startup.wav",
+    "print_start": "print_start.wav",
+    "print_complete": "print_complete.wav",
+    "print_error": "print_error.wav"
+  }
+}
