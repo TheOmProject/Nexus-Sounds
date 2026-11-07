@@ -56,8 +56,8 @@ See [Beta Limitations](#beta-limitations) before installing.
 **Standalone — add to an existing Nexus Screen installation:**
 
 ```bash
-git clone https://github.com/omarmunoz5371/Nexus-Sounds.git ~/nexus-sounds-src
-sudo bash ~/nexus-sounds-src/deploy/install.sh
+git clone https://github.com/omarmunoz5371/Nexus-Sounds.git ~/nexus-sounds
+sudo bash ~/nexus-sounds/deploy/install.sh
 ```
 
 The installer:
@@ -71,13 +71,13 @@ The installer:
 **Non-interactive:**
 
 ```bash
-sudo bash ~/nexus-sounds-src/deploy/install.sh --yes
+sudo bash ~/nexus-sounds/deploy/install.sh --yes
 ```
 
 **Dry run (no changes):**
 
 ```bash
-sudo bash ~/nexus-sounds-src/deploy/install.sh --dry-run
+sudo bash ~/nexus-sounds/deploy/install.sh --dry-run
 ```
 
 ---
@@ -213,7 +213,7 @@ full snippet.
 ### Manual update
 
 ```bash
-cd ~/nexus-sounds-src && git pull
+cd ~/nexus-sounds && git pull
 sudo bash deploy/install.sh --yes
 ```
 
@@ -247,7 +247,7 @@ aplay -D plughw:CARD=Device,DEV=0 ~/nexus-sounds/packs/builtin/nexus_default/sta
 Collect a bug report with:
 
 ```bash
-bash ~/nexus-sounds-src/scripts/bug-report.sh "brief description"
+bash ~/nexus-sounds/scripts/bug-report.sh "brief description"
 ```
 
 ---
@@ -255,7 +255,7 @@ bash ~/nexus-sounds-src/scripts/bug-report.sh "brief description"
 ## Uninstalling
 
 ```bash
-sudo bash ~/nexus-sounds-src/deploy/uninstall.sh
+sudo bash ~/nexus-sounds/deploy/uninstall.sh
 ```
 
 This stops and removes the service. Config and packs are **preserved**.
@@ -263,7 +263,7 @@ This stops and removes the service. Config and packs are **preserved**.
 To also delete `~/nexus-sounds/`:
 
 ```bash
-sudo bash ~/nexus-sounds-src/deploy/uninstall.sh --purge
+sudo bash ~/nexus-sounds/deploy/uninstall.sh --purge
 ```
 
 ---
@@ -274,7 +274,7 @@ If a Nexus Sounds update causes problems, the previous service can be restored b
 the git repository and re-running the installer:
 
 ```bash
-cd ~/nexus-sounds-src
+cd ~/nexus-sounds
 git log --oneline -5           # find the previous commit
 git checkout <previous-commit>
 sudo bash deploy/install.sh --yes
@@ -316,7 +316,7 @@ this project by the Nexus Sounds project. They are distributed under the same
 Include the output of:
 
 ```bash
-bash ~/nexus-sounds-src/scripts/bug-report.sh "brief description of the problem"
+bash ~/nexus-sounds/scripts/bug-report.sh "brief description of the problem"
 ```
 
 ---

@@ -81,8 +81,8 @@ Nexus Screen continues to function without Nexus Sounds installed.
 ### Installation
 
 ```bash
-git clone https://github.com/omarmunoz5371/Nexus-Sounds.git ~/nexus-sounds-src
-sudo bash ~/nexus-sounds-src/deploy/install.sh
+git clone https://github.com/omarmunoz5371/Nexus-Sounds.git ~/nexus-sounds
+sudo bash ~/nexus-sounds/deploy/install.sh
 ```
 
 See [README.md](README.md) for full installation and configuration instructions.
