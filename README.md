@@ -1,6 +1,6 @@
 # Nexus Sounds
 
-> Audio notification add-on for [Nexus Screen](https://github.com/omarmunoz5371/Nexus-Screen).
+> Audio notification add-on for [Nexus Screen](https://github.com/TheOmProject/Nexus-Screen).
 
 Nexus Sounds is an **optional add-on** for Nexus Screen that plays short WAV notification sounds
 for Klipper 3D printer events: startup, print start, print complete, print error, print cancelled,
@@ -56,7 +56,7 @@ See [Beta Limitations](#beta-limitations) before installing.
 **Standalone — add to an existing Nexus Screen installation:**
 
 ```bash
-git clone https://github.com/omarmunoz5371/Nexus-Sounds.git ~/nexus-sounds
+git clone https://github.com/TheOmProject/Nexus-Sounds.git ~/nexus-sounds
 sudo bash ~/nexus-sounds/deploy/install.sh
 ```
 
@@ -201,7 +201,7 @@ Add to `moonraker.conf`:
 [update_manager nexus-sounds]
 type: git_repo
 path: ~/nexus-sounds
-origin: https://github.com/omarmunoz5371/Nexus-Sounds.git
+origin: https://github.com/TheOmProject/Nexus-Sounds.git
 primary_branch: main
 is_system_service: False
 managed_services: nexus-sounds
@@ -311,7 +311,7 @@ this project by the Nexus Sounds project. They are distributed under the same
 
 ## Bug Reports
 
-[Open a Bug Report](https://github.com/omarmunoz5371/Nexus-Sounds/issues/new)
+[Open a Bug Report](https://github.com/TheOmProject/Nexus-Sounds/issues/new)
 
 Include the output of:
 
@@ -329,7 +329,7 @@ Nexus Sounds is released under the [GNU General Public License v3.0](LICENSE).
 
 ## Related
 
-- **[Nexus Screen](https://github.com/omarmunoz5371/Nexus-Screen)** — the touchscreen UI
+- **[Nexus Screen](https://github.com/TheOmProject/Nexus-Screen)** — the touchscreen UI
   Nexus Sounds integrates with (required; install first)
-- **[Nexus Video](https://github.com/omarmunoz5371/Nexus-Video)** — optional animated boot
+- **[Nexus Video](https://github.com/TheOmProject/Nexus-Video)** — optional animated boot
   splash add-on (independent; not required)

@@ -9,7 +9,7 @@
 ### What is Nexus Sounds?
 
 Nexus Sounds is an **optional audio notification add-on** for
-[Nexus Screen](https://github.com/omarmunoz5371/Nexus-Screen).
+[Nexus Screen](https://github.com/TheOmProject/Nexus-Screen).
 It plays short WAV sounds for Klipper 3D printer events (startup, print start, print complete,
 print error, print cancelled, print paused, print resumed) and is configured through a new
 **Settings → Sounds** panel inside Nexus Screen.
@@ -81,7 +81,7 @@ Nexus Screen continues to function without Nexus Sounds installed.
 ### Installation
 
 ```bash
-git clone https://github.com/omarmunoz5371/Nexus-Sounds.git ~/nexus-sounds
+git clone https://github.com/TheOmProject/Nexus-Sounds.git ~/nexus-sounds
 sudo bash ~/nexus-sounds/deploy/install.sh
 ```
 

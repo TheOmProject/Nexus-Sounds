@@ -53,4 +53,4 @@ except Exception as e:
 
 echo "Bug report saved to: ${REPORT_FILE}"
 echo "Attach this file when opening an issue at:"
-echo "  https://github.com/omarmunoz5371/Nexus-Sounds/issues/new"
+echo "  https://github.com/TheOmProject/Nexus-Sounds/issues/new"
