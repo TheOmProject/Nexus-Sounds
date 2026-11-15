@@ -4,6 +4,29 @@ All notable changes to Nexus Sounds are documented here.
 
 ---
 
+## [0.1.1] — 2026-11-15
+
+### Fixed
+- **Print sounds silent**: `notify_status_update` params is a JSON list in the
+  real Moonraker protocol (`params[0]` is the status dict), not a dict with a
+  `"status"` key. The daemon was checking `isinstance(params, dict)` which
+  evaluated False for every real notification, so print start and print complete
+  events were never detected. Startup worked because it uses `notify_klippy_ready`
+  (a different code path). Fixed to `params[0] if isinstance(params, list)`.
+- **Mock Moonraker**: `emit_print_state` now sends the correct wire format
+  (list) so integration tests exercise the same path as real Moonraker.
+- **Update Manager INVALID**: `~/nexus-sounds` lacked a `.git` directory
+  (rsync install). Initialized git repo, set `HEAD → main`, configured
+  `origin` remote and `main` tracking branch, populated index with
+  `skip-worktree` on locally modified files so `is_dirty` stays false.
+
+### Tests
+- Added 4 regression tests in `test_daemon.py`: list-format params fires event,
+  old dict-format is handled gracefully, `print_complete` transition, no
+  duplicate on reconnect.
+
+---
+
 ## [0.1.0-beta.1] — 2026-11-07
 
 Initial public beta release.

@@ -62,10 +62,11 @@ class MockMoonrakerServer:
 
     async def emit_print_state(self, state: str) -> None:
         self.printer_state = state
+        # Real Moonraker format: params is a list; params[0] is the status dict
         await self._broadcast({
             "jsonrpc": "2.0",
             "method": "notify_status_update",
-            "params": {"status": {"print_stats": {"state": state}}, "eventtime": 0.0},
+            "params": [{"print_stats": {"state": state}}, {"eventtime": 0.0}],
         })
 
     async def _broadcast(self, msg: dict) -> None:

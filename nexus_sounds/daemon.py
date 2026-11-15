@@ -175,7 +175,8 @@ class AudioDaemon:
         elif method == "notify_klippy_disconnected":
             self._on_klippy_disconnect()
         elif method == "notify_status_update":
-            status = params.get("status", {}) if isinstance(params, dict) else {}
+            # Moonraker sends params as a list: [status_dict, {eventtime: ...}]
+            status = params[0] if isinstance(params, list) and params else {}
             ps = status.get("print_stats", {})
             if ps and "state" in ps:
                 self._on_print_state_change(ps["state"])

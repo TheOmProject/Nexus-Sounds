@@ -199,18 +199,19 @@ def test_handle_notification_print_state_change(tmp_path):
     daemon = make_daemon(tmp_path)
     daemon._state_tracker.set_baseline("standby")
     with patch.object(daemon, '_play_event') as mock_play:
-        daemon._handle_notification("notify_status_update", {
-            "status": {"print_stats": {"state": "printing"}}
-        })
+        # Real Moonraker format: params is a list; params[0] is the status dict
+        daemon._handle_notification("notify_status_update", [
+            {"print_stats": {"state": "printing"}}, {"eventtime": 0.0}
+        ])
     mock_play.assert_called_with("print_start")
 
 
 def test_handle_notification_no_state_field(tmp_path):
     daemon = make_daemon(tmp_path)
     with patch.object(daemon, '_play_event') as mock_play:
-        daemon._handle_notification("notify_status_update", {
-            "status": {"print_stats": {"filename": "test.gcode"}}
-        })
+        daemon._handle_notification("notify_status_update", [
+            {"print_stats": {"filename": "test.gcode"}}, {"eventtime": 0.0}
+        ])
     mock_play.assert_not_called()
 
 
@@ -414,3 +415,53 @@ def test_run_once_raises_if_websockets_unavailable(tmp_path):
             asyncio.run(daemon.run_once())
     finally:
         daemon_mod.websockets = orig
+
+
+# ── Regression tests for notify_status_update params format ──────────────────
+
+def test_notify_status_update_list_format(tmp_path):
+    """params is a list (real Moonraker wire format) — print_start fires."""
+    daemon = make_daemon(tmp_path)
+    daemon._state_tracker.set_baseline("standby")
+    with patch.object(daemon, '_play_event') as mock_play:
+        daemon._handle_notification("notify_status_update", [
+            {"print_stats": {"state": "printing"}}, {"eventtime": 1234.0}
+        ])
+    mock_play.assert_called_with("print_start")
+
+
+def test_notify_status_update_dict_format_ignored(tmp_path):
+    """params as a dict (old incorrect format) is handled gracefully — no crash, no event."""
+    daemon = make_daemon(tmp_path)
+    daemon._state_tracker.set_baseline("standby")
+    with patch.object(daemon, '_play_event') as mock_play:
+        daemon._handle_notification("notify_status_update", {
+            "status": {"print_stats": {"state": "printing"}}
+        })
+    mock_play.assert_not_called()
+
+
+def test_print_complete_fires_on_transition(tmp_path):
+    """print_complete fires when state changes from printing → complete."""
+    daemon = make_daemon(tmp_path)
+    daemon._state_tracker.set_baseline("printing")
+    with patch.object(daemon, '_play_event') as mock_play:
+        daemon._handle_notification("notify_status_update", [
+            {"print_stats": {"state": "complete"}}, {"eventtime": 0.0}
+        ])
+    mock_play.assert_called_with("print_complete")
+
+
+def test_no_duplicate_on_reconnect(tmp_path):
+    """If a print is already running when daemon starts, no print_start fires."""
+    daemon = make_daemon(tmp_path)
+    # Simulate: subscription response sets baseline to 'printing'
+    daemon._handle_response({
+        "result": {"status": {"print_stats": {"state": "printing"}}}
+    })
+    with patch.object(daemon, '_play_event') as mock_play:
+        # Same state update arrives — no transition
+        daemon._handle_notification("notify_status_update", [
+            {"print_stats": {"state": "printing"}}, {"eventtime": 0.0}
+        ])
+    mock_play.assert_not_called()
