@@ -4,6 +4,19 @@ All notable changes to Nexus Sounds are documented here.
 
 ---
 
+## [0.1.3] — 2026-11-15
+
+### Fixed
+- **print_error silent on G-code errors during printing**: Klipper logs
+  `Unknown command:"HOME"` and similar errors as `notify_gcode_response`
+  with a `!! ` prefix, without changing `print_stats.state`. The daemon
+  now subscribes to `notify_gcode_response` and fires `print_error` when
+  a `!! ` message arrives while `print_stats.state = "printing"`. Messages
+  while idle (homing, calibration, terminal) are ignored to prevent false
+  positives. The existing 3-second cooldown prevents duplicate sounds.
+
+---
+
 ## [0.1.2] — 2026-11-15
 
 ### Fixed

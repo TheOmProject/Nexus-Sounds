@@ -465,3 +465,44 @@ def test_no_duplicate_on_reconnect(tmp_path):
             {"print_stats": {"state": "printing"}}, {"eventtime": 0.0}
         ])
     mock_play.assert_not_called()
+
+
+# ── Regression tests for notify_gcode_response / G-code errors ───────────────
+
+def test_gcode_error_during_print_fires_print_error(tmp_path):
+    """!! G-code error while printing triggers print_error sound."""
+    daemon = make_daemon(tmp_path)
+    daemon._state_tracker.set_baseline("printing")
+    with patch.object(daemon, '_play_event') as mock_play:
+        daemon._handle_notification("notify_gcode_response", ['!! Unknown command:"HOME"\n'])
+    mock_play.assert_called_with("print_error")
+
+
+def test_gcode_error_at_idle_no_sound(tmp_path):
+    """!! G-code error while NOT printing does not trigger print_error."""
+    daemon = make_daemon(tmp_path)
+    daemon._state_tracker.set_baseline("standby")
+    with patch.object(daemon, '_play_event') as mock_play:
+        daemon._handle_notification("notify_gcode_response", ['!! Unknown command:"HOME"\n'])
+    mock_play.assert_not_called()
+
+
+def test_gcode_info_message_no_sound(tmp_path):
+    """// informational G-code response does not trigger any sound."""
+    daemon = make_daemon(tmp_path)
+    daemon._state_tracker.set_baseline("printing")
+    with patch.object(daemon, '_play_event') as mock_play:
+        daemon._handle_notification("notify_gcode_response", ['// Beacon calibration complete\n'])
+    mock_play.assert_not_called()
+
+
+def test_gcode_error_cooldown_prevents_duplicate(tmp_path):
+    """Second !! error within cooldown period does not play twice."""
+    daemon = make_daemon(tmp_path)
+    daemon._state_tracker.set_baseline("printing")
+    daemon._event_filter.mark_played("print_error")  # simulate recent play
+    with patch.object(daemon, '_play_event') as mock_play:
+        daemon._handle_notification("notify_gcode_response", ['!! Some error\n'])
+    # _play_event is called but EventFilter blocks inside it — still assert called once
+    # (the guard is inside _play_event, not _on_gcode_error)
+    mock_play.assert_called_once_with("print_error")

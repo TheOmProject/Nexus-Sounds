@@ -180,6 +180,11 @@ class AudioDaemon:
             ps = status.get("print_stats", {})
             if ps and "state" in ps:
                 self._on_print_state_change(ps["state"])
+        elif method == "notify_gcode_response":
+            # params is a list; first element is the response string
+            response = params[0] if isinstance(params, list) and params else ""
+            if isinstance(response, str) and response.startswith("!!"):
+                self._on_gcode_error(response)
 
     def _handle_response(self, msg: dict) -> None:
         result = msg.get("result", {})
@@ -216,6 +221,13 @@ class AudioDaemon:
             self._state_file.touch()
         except OSError:
             pass
+
+    def _on_gcode_error(self, message: str) -> None:
+        # Only fire during an active print; ignore !! errors at idle to avoid
+        # false positives from homing, calibration, or terminal commands
+        if self._state_tracker._state == "printing":
+            logger.info("G-code error during print: %s", message.strip())
+            self._play_event("print_error")
 
     def _on_print_state_change(self, new_state: str) -> None:
         old_state = self._state_tracker._state
