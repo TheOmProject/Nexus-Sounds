@@ -149,13 +149,38 @@ sed \
     "${SCRIPT_DIR}/nexus-sounds.service.in" > "${TMPFILE}"
 
 cp "${TMPFILE}" "${SERVICE_DIR}/nexus-sounds.service"
-chown "${TARGET_USER}:${TARGET_USER}" "${SERVICE_DIR}/nexus-sounds.service"
+# Fix ownership of the whole .config/systemd/user tree (mkdir ran as root)
+chown -R "${TARGET_USER}:${TARGET_USER}" "${SERVICE_DIR}"
 
-echo "Reloading systemd daemon and enabling nexus-sounds.service"
-sudo -u "${TARGET_USER}" XDG_RUNTIME_DIR="/run/user/$(id -u "${TARGET_USER}")" \
-    systemctl --user daemon-reload
-sudo -u "${TARGET_USER}" XDG_RUNTIME_DIR="/run/user/$(id -u "${TARGET_USER}")" \
-    systemctl --user enable --now nexus-sounds.service
+TARGET_UID="$(id -u "${TARGET_USER}")"
+XDG_RUNTIME_DIR_PATH="/run/user/${TARGET_UID}"
+
+# Enable linger so user services survive without an active login session
+loginctl enable-linger "${TARGET_USER}" 2>/dev/null || true
+
+echo "Enabling nexus-sounds.service..."
+
+# Try the full systemctl --user path (needs an active dbus session)
+_svc_ok=false
+if [[ -d "${XDG_RUNTIME_DIR_PATH}" ]] && \
+   sudo -u "${TARGET_USER}" XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR_PATH}" \
+     systemctl --user daemon-reload 2>/dev/null; then
+  if sudo -u "${TARGET_USER}" XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR_PATH}" \
+       systemctl --user enable --now nexus-sounds.service 2>/dev/null; then
+    echo "nexus-sounds.service enabled and started"
+    _svc_ok=true
+  fi
+fi
+
+if ! ${_svc_ok}; then
+  # Fallback: create the enable symlink directly (no dbus session required).
+  # The service will start at next login or on reboot once linger is active.
+  WANTS_DIR="${SERVICE_DIR}/default.target.wants"
+  mkdir -p "${WANTS_DIR}"
+  chown -R "${TARGET_USER}:${TARGET_USER}" "${WANTS_DIR}"
+  ln -sf "${SERVICE_DIR}/nexus-sounds.service" "${WANTS_DIR}/nexus-sounds.service"
+  echo "nexus-sounds.service enabled via symlink (starts at next login or reboot)"
+fi
 
 # ── Nexus Screen venv integration (optional) ─────────────────────────────────
 # If Nexus Screen's venv exists, install a .pth file so nexus_sounds is
