@@ -119,3 +119,55 @@ def get_sound_path(pack: PackInfo, event_key: str) -> Optional[Path]:
         return p if p.exists() else None
     except ValueError:
         return None
+
+
+_WAV_EXTENSIONS = frozenset({".wav"})
+
+
+def scan_custom_sounds(packs_dir: Path) -> list[dict]:
+    """Discover .wav files in packs/custom/ without requiring a manifest.
+
+    Checks the root of custom/ and one subdirectory level deep.
+    Returns list of {"filename": relative_str, "path": Path}.
+    """
+    custom_dir = packs_dir / "custom"
+    if not custom_dir.is_dir():
+        return []
+    results: list[dict] = []
+    seen: set[str] = set()
+    for entry in sorted(custom_dir.iterdir()):
+        if entry.is_file() and entry.suffix.lower() in _WAV_EXTENSIONS:
+            rel = entry.name
+            if rel not in seen:
+                seen.add(rel)
+                results.append({"filename": rel, "path": entry})
+        elif entry.is_dir():
+            for f in sorted(entry.iterdir()):
+                if f.is_file() and f.suffix.lower() in _WAV_EXTENSIONS:
+                    rel = f"{entry.name}/{f.name}"
+                    if rel not in seen:
+                        seen.add(rel)
+                        results.append({"filename": rel, "path": f})
+    return results
+
+
+def safe_path_custom(custom_dir: Path, filename: str) -> Path:
+    """Validate and resolve a custom sound filename (root or one subdir level).
+
+    Unlike safe_path(), allows exactly one subdirectory prefix (e.g. 'sub/file.wav').
+    """
+    if not filename:
+        raise ValueError("filename must not be empty")
+    if filename.startswith("/"):
+        raise ValueError(f"absolute path not allowed: {filename!r}")
+    parts = filename.split("/")
+    if len(parts) > 2:
+        raise ValueError(f"only one subdirectory level allowed: {filename!r}")
+    if ".." in parts or "" in parts:
+        raise ValueError(f"invalid path component: {filename!r}")
+    resolved = (custom_dir / filename).resolve()
+    try:
+        resolved.relative_to(custom_dir.resolve())
+    except ValueError:
+        raise ValueError(f"path escapes custom directory: {filename!r}")
+    return resolved

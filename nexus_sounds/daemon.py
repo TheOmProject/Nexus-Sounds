@@ -149,22 +149,35 @@ class AudioDaemon:
             self._play_event(pr, force=True)
 
     def _play_file(self, filename: str) -> None:
-        """Play a specific file from the active pack (for preview)."""
-        from .packs import safe_path as _safe_path
+        """Play a specific file for preview — checks active pack then custom folder."""
+        from .packs import safe_path as _safe_path, safe_path_custom as _safe_custom
         cfg = self._config
         theme = cfg.get("theme", "nexus_default")
         pack = get_pack(self._packs, theme)
-        if pack is None:
-            logger.warning("Sound pack %r not found for file preview", theme)
+        path = None
+
+        if pack is not None:
+            try:
+                candidate = _safe_path(pack.pack_dir, filename)
+                if candidate.exists():
+                    path = candidate
+            except ValueError:
+                pass
+
+        if path is None:
+            custom_dir = self._packs_dir / "custom"
+            try:
+                candidate = _safe_custom(custom_dir, filename)
+                if candidate.exists():
+                    path = candidate
+            except ValueError:
+                logger.warning("Invalid preview filename %r", filename)
+                return
+
+        if path is None:
+            logger.warning("Preview file not found: %s", filename)
             return
-        try:
-            path = _safe_path(pack.pack_dir, filename)
-        except ValueError:
-            logger.warning("Invalid preview filename %r", filename)
-            return
-        if not path.exists():
-            logger.warning("Preview file not found: %s", path)
-            return
+
         device = resolve_device(cfg.get("output_device", "auto"))
         self._player.play(path, device)
         logger.info("Preview file %s via %s", filename, device)
@@ -261,14 +274,26 @@ class AudioDaemon:
             if assigned is None:
                 logger.debug("Event %r has no sound assigned (OFF)", event_key)
                 return
-            from .packs import safe_path as _safe_path
+            from .packs import safe_path as _safe_path, safe_path_custom as _safe_custom
+            # Try assigned file in active pack
+            path = None
             try:
-                path = _safe_path(pack.pack_dir, assigned)
-                if not path.exists():
-                    logger.warning("Assigned sound %r not found in pack %r", assigned, theme)
-                    path = get_sound_path(pack, event_key)
+                candidate = _safe_path(pack.pack_dir, assigned)
+                if candidate.exists():
+                    path = candidate
             except ValueError:
-                logger.warning("Invalid assigned sound %r for event %r", assigned, event_key)
+                pass
+            # Try custom folder (supports plain filenames and one subdir level)
+            if path is None:
+                custom_dir = self._packs_dir / "custom"
+                try:
+                    candidate = _safe_custom(custom_dir, assigned)
+                    if candidate.exists():
+                        path = candidate
+                except ValueError:
+                    pass
+            if path is None:
+                logger.warning("Assigned sound %r not found in pack %r or custom", assigned, theme)
                 path = get_sound_path(pack, event_key)
         else:
             path = get_sound_path(pack, event_key)

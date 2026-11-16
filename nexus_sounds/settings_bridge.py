@@ -176,7 +176,11 @@ def set_event_sound(event: str, filename: Optional[str]) -> bool:
     if not is_installed():
         return False
     if filename is not None:
-        if "/" in filename or "\\" in filename or ".." in filename:
+        # Allow one subdirectory level for custom sounds (e.g. subdir/file.wav)
+        if "\\" in filename:
+            return False
+        parts = filename.split("/")
+        if len(parts) > 2 or ".." in parts or any(p == "" for p in parts):
             return False
     p = _get_config_path()
     if p is None:
@@ -237,11 +241,29 @@ def preview_sound(event: str) -> bool:
         return False
 
 
+def list_custom_sounds() -> list[dict]:
+    """List .wav files discovered in packs/custom/ (no manifest required)."""
+    if not is_installed():
+        return []
+    d = _get_install_dir()
+    if d is None:
+        return []
+    from .packs import scan_custom_sounds
+    return [
+        {"filename": item["filename"], "path": str(item["path"]), "exists": item["path"].exists()}
+        for item in scan_custom_sounds(d / "packs")
+    ]
+
+
 def preview_file(filename: str) -> bool:
-    """Request daemon to play a specific sound file from the active pack."""
+    """Request daemon to play a specific sound file from the active pack or custom folder."""
     if not is_installed():
         return False
-    if not filename or "/" in filename or "\\" in filename or ".." in filename:
+    # Allow one subdirectory level for custom sounds (e.g. subdir/file.wav)
+    if not filename or "\\" in filename:
+        return False
+    parts = filename.split("/")
+    if len(parts) > 2 or ".." in parts or any(p == "" for p in parts):
         return False
     p = _get_config_path()
     if p is None:
