@@ -54,9 +54,11 @@ class PrintStateTracker:
         self._state = new_state
 
         if new_state == "printing":
-            if old in (None, "standby", "paused"):
-                if old == "paused":
-                    return "print_resumed"
+            if old == "paused":
+                return "print_resumed"
+            # Any non-printing prior state (standby, error, complete, cancelled, None)
+            # triggers print_start — guards only against spurious same-state updates
+            if old != "printing":
                 return "print_start"
         if new_state == "complete":
             return "print_complete"

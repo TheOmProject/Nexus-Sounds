@@ -43,5 +43,6 @@ def test_no_hardcoded_resolution_overflow():
     # This is a soft check, not exhaustive
     large_x = re.findall(r'\b(9\d\d|[1-9]\d{3,})\b', TEXT)
     # Filter out anything that could be a year, port, etc.
-    suspicious = [v for v in large_x if int(v) > 800 and int(v) != 44100]
+    # 1024 is a legitimate byte-unit constant (KB/MB calculations), not a pixel value
+    suspicious = [v for v in large_x if int(v) > 800 and int(v) not in (1024, 44100)]
     assert len(suspicious) == 0, f"Possibly out-of-bounds constants: {suspicious}"

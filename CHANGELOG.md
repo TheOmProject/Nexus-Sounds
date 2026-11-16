@@ -4,6 +4,23 @@ All notable changes to Nexus Sounds are documented here.
 
 ---
 
+## [0.1.2] — 2026-11-15
+
+### Fixed
+- **print_start silent after error state**: `PrintStateTracker` only accepted
+  `None/standby/paused` as valid prior states for the `printing` transition.
+  If Klipper entered `error` before starting a print (e.g. a failed macro
+  command during homing), the subsequent `error → printing` transition was
+  silently ignored and no print_start sound fired. Fixed: any non-printing
+  prior state now triggers `print_start`, except `paused → printing` which
+  correctly triggers `print_resumed`.
+- **State transitions now logged at INFO level** so print_stats changes are
+  visible in `journalctl` for diagnosis.
+- **Test false positive**: `test_no_hardcoded_resolution_overflow` now excludes
+  1024 (a legitimate byte-unit constant) from the suspicious-pixel-value check.
+
+---
+
 ## [0.1.1] — 2026-11-15
 
 ### Fixed

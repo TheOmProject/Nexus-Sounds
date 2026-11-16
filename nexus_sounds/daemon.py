@@ -218,7 +218,9 @@ class AudioDaemon:
             pass
 
     def _on_print_state_change(self, new_state: str) -> None:
+        old_state = self._state_tracker._state
         event_key = self._state_tracker.transition(new_state)
+        logger.info("print_stats: %s → %s  event=%s", old_state, new_state, event_key)
         if event_key:
             self._play_event(event_key)
 
