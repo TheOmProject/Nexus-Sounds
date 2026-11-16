@@ -8,6 +8,34 @@ Nexus Sounds is an **optional addon** for Nexus Screen that plays notification s
 
 ---
 
+## Screenshots
+
+> All screenshots are captured from the real Nexus Screen UI at 800×480 (production resolution).
+
+### Sounds Settings
+
+![Sounds Settings — enable toggle, mute toggle, volume control, and navigation tiles](docs/screenshots/sounds-settings.png)
+
+Main settings screen: **Sounds ON/OFF** toggle, **Mute** toggle, **Volume** control (± buttons, current level displayed), and navigation tiles for **Event Sounds** and **Sound Packs**.
+
+### Event Sounds
+
+![Event Sounds — list of 7 configurable printer events](docs/screenshots/event-sounds.png)
+
+Tap any event to change its sound. Events with assigned sounds show the filename on the right.
+
+### Sound Selection
+
+![Sound Selection — full sound list including custom WAV files](docs/screenshots/sound-library.png)
+
+Sound picker for a single event. The left column shows all available sounds (built-in pack + custom WAV files from `packs/custom/`). The custom files `print_completed1.wav` and `print_start_1.wav` appear automatically with no restart required. Tap a sound to select it, then **Preview** to hear it, and **Apply** to save.
+
+### Sound Preview
+
+![Sound Preview — startup event with sound selected and preview controls](docs/screenshots/sound-preview.png)
+
+---
+
 ## Installation
 
 ### Option A — Unified Bootstrap (recommended)
