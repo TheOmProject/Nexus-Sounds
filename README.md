@@ -38,25 +38,21 @@ Sound picker for a single event. The left column shows all available sounds (bui
 
 ## Installation
 
-### Option A — Unified Bootstrap (recommended)
-
-Install Nexus Screen and Nexus Sounds together in one command:
-
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/TheOmProject/Nexus-Screen/main/deploy/bootstrap.sh) --with-sounds
+curl -fsSL https://raw.githubusercontent.com/TheOmProject/Nexus-Screen/main/deploy/bootstrap.sh | bash
 ```
 
-Or install all three addons at once:
+> Run as your normal user, not as root. The script uses `sudo` only where required.
 
-```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/TheOmProject/Nexus-Screen/main/deploy/bootstrap.sh) --with-sounds --with-video
-```
+The unified installer offers Nexus Sounds as an optional add-on during setup. It installs
+the Python package, creates and enables the systemd user service, and writes a default
+`config.json` — no manual commands required.
 
-### Option B — Standalone (Nexus Screen already installed)
+**Add to an existing Nexus Screen installation:**
 
 ```bash
 git clone https://github.com/TheOmProject/Nexus-Sounds.git ~/nexus-sounds
-bash ~/nexus-sounds/deploy/public-install.sh
+sudo bash ~/nexus-sounds/deploy/public-install.sh
 ```
 
 The installer:
